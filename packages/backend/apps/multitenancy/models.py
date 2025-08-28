@@ -39,7 +39,7 @@ class Tenant(TimestampedMixin, models.Model):
     creator: settings.AUTH_USER_MODEL = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name: str = models.CharField(max_length=100, unique=False)
     slug: str = models.SlugField(max_length=100, unique=True)
-    type: str = models.CharField(choices=constants.TenantType.choices)
+    type: str = models.CharField(choices=constants.TenantType.choices, max_length=20)
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='TenantMembership',
@@ -130,7 +130,7 @@ class TenantMembership(TimestampedMixin, models.Model):
     creator: settings.AUTH_USER_MODEL = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="created_tenant_memberships"
     )
-    role = models.CharField(choices=constants.TenantUserRole.choices, default=constants.TenantUserRole.OWNER)
+    role = models.CharField(choices=constants.TenantUserRole.choices, default=constants.TenantUserRole.OWNER, max_length=20)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="user_memberships")
 
     # Invitation connected fields

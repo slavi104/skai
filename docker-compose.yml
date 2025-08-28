@@ -22,7 +22,7 @@ services:
       context: ./packages/backend
       target: backend
     image: "${PROJECT_NAME}/backend"
-    command: ["./scripts/runtime/run_local.sh"]
+    command: ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:5001"]
     ports:
       - "5001:5001"
     depends_on:
@@ -40,11 +40,36 @@ services:
       - AWS_ACCESS_KEY_ID=foo
       - AWS_SECRET_ACCESS_KEY=bar
       - AWS_DEFAULT_REGION=eu-west-1
+      - DJANGO_SECRET_KEY=django-insecure-local-development-key-change-in-production
+      - DJANGO_SETTINGS_MODULE=config.settings
+      - DATABASE_URL=postgres://backend:backend@db:5432/backend
+      - DB_CONNECTION={"ENGINE":"django.db.backends.postgresql","dbname":"backend","username":"backend","password":"backend","host":"db","port":"5432"}
+      - REDIS_URL=redis://redis:6379/0
+      - REDIS_CONNECTION=redis://redis:6379/0
+      - ENVIRONMENT_NAME=local
+      - DEBUG=True
+      - DJANGO_DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - STRIPE_PUBLISHABLE_KEY=pk_test_51
+      - STRIPE_SECRET_KEY=sk_test_51
+      - STRIPE_WEBHOOK_SECRET=whsec_test
+      - STRIPE_API_BASE=http://stripemock:12111
+      - CONTENTFUL_SPACE=test
+      - CONTENTFUL_ENV=master
+      - CONTENTFUL_TOKEN=test
+      - EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+      - DEFAULT_FROM_EMAIL=noreply@example.com
+      - CHAMBER_SERVICE_NAME=backend
+      - HASHID_FIELD_SALT=local-development-salt-change-in-production
+      - AWS_XRAY_SDK_ENABLED=False
     stdin_open: true
     tty: true
 
   celery_beat:
-    image: '${PROJECT_NAME}/backend'
+    build:
+      context: ./packages/backend
+      target: backend
     command: ["./scripts/runtime/run_celery_beat.sh"]
     restart: always
     depends_on:
@@ -52,7 +77,9 @@ services:
         condition: service_started
 
   celery_default:
-    image: '${PROJECT_NAME}/backend'
+    build:
+      context: ./packages/backend
+      target: backend
     command: ["./scripts/runtime/run_celery_worker_default.sh"]
     restart: always
     depends_on:

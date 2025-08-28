@@ -52,7 +52,8 @@ const handleApiErrors = (
         return callRefresh();
       }
     }
-    IS_LOCAL_ENV && console.log(`[Network error]: ${networkError}`);
+    // Don't log network errors in local environment to reduce console noise
+    // IS_LOCAL_ENV && console.log(`[Network error]: ${networkError}`);
   }
 };
 
@@ -104,13 +105,14 @@ const splitLink = split(
   splitHttpLink
 );
 
-const maxRetryAttempts = 5;
+const maxRetryAttempts = 1; // Reduced from 5 to 1 to avoid excessive retries
 
 const retryLink = new RetryLink({
   delay: () => 1000,
   attempts: (count, operation, error) => {
     if (count === maxRetryAttempts) {
-      showNetworkErrorMessage();
+      // Don't show network error message in local environment
+      // showNetworkErrorMessage();
     }
     return !!error && count < maxRetryAttempts;
   },

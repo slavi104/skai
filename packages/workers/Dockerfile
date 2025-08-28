@@ -40,7 +40,9 @@ COPY $SRC_CORE_PATH/package.json $DEST_CORE_PATH/
 COPY $SRC_WORKERS_PATH/package.json $DEST_WORKERS_PATH/
 COPY tsconfig* $APP_PATH/
 COPY $SRC_CLI_PATH $DEST_CLI_PATH/
-RUN pnpm install --include-workspace-root --frozen-lockfile --filter=workers... --filter=cli...
+COPY packages/internal/tools $APP_PATH/packages/internal/tools/
+COPY packages/webapp-libs/webapp-emails $APP_PATH/packages/webapp-libs/webapp-emails/
+RUN pnpm install --include-workspace-root --no-frozen-lockfile --filter=workers... --filter=cli...
 
 COPY nx.json tsconfig* jest* babel* .eslintrc* .prettier* .eslintrc* $APP_PATH/
 COPY $SRC_CORE_PATH $DEST_CORE_PATH/

@@ -39,20 +39,7 @@ COPY . /app/
 
 RUN chmod +x /app/scripts/runtime/*.sh
 
-FROM backend_build AS static_files
-ENV HASHID_FIELD_SALT='' \
-    DJANGO_PARENT_HOST='' \
-    DJANGO_SECRET_KEY='build' \
-    DB_CONNECTION='{"dbname":"build","username":"build","password":"build","host":"db","port":5432}' \
-    REDIS_CONNECTION=redis://redis:6379 \
-    WORKERS_EVENT_BUS_NAME='' \
-    PYTHONPATH=/pkgs/__pypackages__/3.11/lib
-
-RUN ./scripts/runtime/build_static.sh
-
-
 FROM backend_build AS backend
-COPY --from=static_files /app/static /app/static
 ENV PYTHONPATH=/pkgs/__pypackages__/3.11/lib \
     PATH=$PATH:/pkgs/__pypackages__/3.11/bin
 

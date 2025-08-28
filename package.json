@@ -4,8 +4,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "prepare": "husky install",
-    "postinstall": "node packages/internal/cli/scripts/build.js"
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@apollo/client": "^3.9.6",

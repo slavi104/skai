@@ -14,7 +14,8 @@ export class WebSocketLink extends ApolloLink {
     return new SubscriptionClient(
       `${window.location.protocol.startsWith('https') ? 'wss' : 'ws'}://${window.location.host}/api/graphql/`,
       {
-        reconnect: true,
+        reconnect: false, // Disable auto-reconnect to avoid constant retries
+        connectionParams: {},
       }
     );
   }
