@@ -3,7 +3,7 @@
 
 [metadata]
 groups = ["default", "dev"]
-strategy = ["cross_platform"]
+strategy = []
 lock_version = "4.5.0"
 content_hash = "sha256:c5b3cfd41c742db73bf39b33d23d13ea53c3c172fca927097adfee443d65b35e"
 
