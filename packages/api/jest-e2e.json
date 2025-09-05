@@ -1,0 +1,12 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "testMatch": ["**/?(*.)+(e2e|e2e-spec).[tj]s"],
+  "moduleFileExtensions": ["ts", "js", "json"],
+  "rootDir": ".",
+  "globals": {
+    "ts-jest": {
+      "tsconfig": "tsconfig.json"
+    }
+  }
+}

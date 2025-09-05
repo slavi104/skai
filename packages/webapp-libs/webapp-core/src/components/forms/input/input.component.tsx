@@ -8,7 +8,7 @@ export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, error, label, required, type, ...props }: InputProps, ref) => {
+  ({ className, error, label, required, type, value, defaultValue, ...props }: InputProps, ref) => {
     return (
       <div className={cn(`relative w-full max-w-xs`, className)}>
         <label className="flex flex-col items-start">
@@ -24,6 +24,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               }
             )}
             ref={ref}
+            value={value !== undefined ? value : undefined}
+            defaultValue={value === undefined ? defaultValue : undefined}
             {...props}
           />
           {label && (

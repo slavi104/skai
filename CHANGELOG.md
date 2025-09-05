@@ -1,5 +1,14 @@
 # Changelog
 
+## PR#1 - Tenant API bootstrap (YYYY-MM-DD)
+
+- Add Prisma models and schema for Account, App, ApiKey, Entity, Field, Job, UsageLog, CreditBalance
+- Seed demo tenant with app, credit balance, entity/fields, and one API key; print/save plaintext
+- Implement API key auth with per-key rate limiting and tenant context
+- Endpoints: POST /v1/apps/keys:rotate, GET /v1/usage/balance, GET /v1/usage/logs
+- Swagger at /docs with API key scheme
+- e2e tests for key rotation, balance, logs
+
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ### [4.1.1](https://github.com/apptension/saas-boilerplate/compare/4.1.0...4.1.1) (2024-09-27)

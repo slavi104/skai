@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id            String        @id @default(uuid()) @db.Uuid
+  name          String        @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  apps          App[]
+  creditBalance CreditBalance?
+}
+
+model App {
+  id        String    @id @default(uuid()) @db.Uuid
+  accountId String    @db.Uuid
+  account   Account   @relation(fields: [accountId], references: [id])
+  name      String
+  status    AppStatus @default(ACTIVE)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  apiKeys   ApiKey[]
+  entities  Entity[]
+  jobs      Job[]
+  logs      UsageLog[]
+
+  @@unique([accountId, name])
+}
+
+model ApiKey {
+  id         String   @id @default(uuid()) @db.Uuid
+  appId      String   @db.Uuid
+  app        App      @relation(fields: [appId], references: [id])
+  publicId   String   @unique
+  prefix     String   @default("sk_live")
+  secretHash String
+  lastFour   String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  revokedAt  DateTime?
+  logs       UsageLog[]
+}
+
+model Entity {
+  id        String   @id @default(uuid()) @db.Uuid
+  appId     String   @db.Uuid
+  app       App      @relation(fields: [appId], references: [id])
+  name      String
+  note      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  fields    Field[]
+
+  @@unique([appId, name])
+}
+
+model Field {
+  id        String    @id @default(uuid()) @db.Uuid
+  entityId  String    @db.Uuid
+  entity    Entity    @relation(fields: [entityId], references: [id])
+  name      String
+  type      FieldType
+  required  Boolean   @default(false)
+  metadata  Json?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([entityId, name])
+}
+
+model Job {
+  id         String    @id @default(uuid()) @db.Uuid
+  appId      String    @db.Uuid
+  app        App       @relation(fields: [appId], references: [id])
+  type       String
+  status     JobStatus @default(QUEUED)
+  input      Json?
+  output     Json?
+  error      String?
+  createdAt  DateTime  @default(now())
+  startedAt  DateTime?
+  finishedAt DateTime?
+}
+
+model UsageLog {
+  id         String     @id @default(uuid()) @db.Uuid
+  appId      String     @db.Uuid
+  app        App        @relation(fields: [appId], references: [id])
+  apiKeyId   String?
+  apiKey     ApiKey?    @relation(fields: [apiKeyId], references: [id])
+  eventType  UsageEvent
+  endpoint   String?
+  statusCode Int?
+  credits    Int        @default(0)
+  meta       Json?
+  createdAt  DateTime   @default(now())
+}
+
+model CreditBalance {
+  accountId String   @id @db.Uuid
+  account   Account  @relation(fields: [accountId], references: [id])
+  available Int      @default(0)
+  reserved  Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+enum AppStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum FieldType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+  DATETIME
+}
+
+enum JobStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELED
+}
+
+enum UsageEvent {
+  REQUEST
+  CREDIT_DEBIT
+  KEY_ROTATE
+  OTHER
+}
+
+

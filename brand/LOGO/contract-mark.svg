@@ -1,0 +1,8 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SKAI Agents contract mark">
+  <rect width="256" height="256" fill="#0A2A43"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M64 64 h-20 v128 h20"/>
+    <path d="M192 64 h20 v128 h-20"/>
+    <path d="M96 92 c0 -16 16 -28 40 -28 c24 0 40 8 40 24 c0 30 -80 18 -80 52 c0 16 16 28 40 28 c20 0 34 -6 40 -18"/>
+  </g>
+</svg>
