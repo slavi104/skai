@@ -24,7 +24,7 @@ export class UsageService {
   ) {
     const items = await this.prisma.usageLog.findMany({
       where: { appId: tenant.appId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: limit + 1,
       cursor: cursor ? { id: cursor } : undefined,
       skip: cursor ? 1 : 0,

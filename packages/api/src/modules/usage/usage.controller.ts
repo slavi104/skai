@@ -23,7 +23,7 @@ export class UsageController {
     @Query('limit') limit?: string,
     @Query('cursor') cursor?: string,
   ) {
-    const l = Math.min(Math.max(parseInt(limit || '20', 10), 1), 100);
+    const l = Math.min(Math.max(parseInt(limit || '20', 10), 1), 200);
     return this.usageService.getLogs(tenant, l, cursor);
   }
 }

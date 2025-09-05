@@ -8,7 +8,11 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:db:seed": "prisma db seed",
-    "test:e2e": "jest --config jest-e2e.json"
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "pnpm run prisma:db:seed",
+    "test": "jest -c jest.config.ts",
+    "test:e2e": "jest --config jest-e2e.json",
+    "test:cov": "jest -c jest.config.ts --coverage"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.7",
