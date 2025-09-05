@@ -26,7 +26,7 @@ function randomBase62(bytes: number): string {
   return out.reverse().join('');
 }
 
-async function main() {
+export async function main() {
   const prisma = new PrismaClient();
   try {
     const account = await prisma.account.upsert({
@@ -97,9 +97,11 @@ async function main() {
   }
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+if (process.env.NODE_ENV !== 'test') {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}
 
 

@@ -5,6 +5,7 @@ import { AppModule } from '../../src/app.module';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import * as fs from 'fs';
 import * as path from 'path';
+import { main as runSeed } from '../../prisma/seed';
 
 describe('Usage E2E', () => {
   let app: INestApplication;
@@ -22,29 +23,13 @@ describe('Usage E2E', () => {
 
     prisma = app.get(PrismaService);
 
-    // Reset DB and seed via Prisma API directly to avoid external processes
+    // Clean and run the real seed
     await prisma.$executeRawUnsafe('TRUNCATE "UsageLog", "ApiKey", "Field", "Entity", "Job", "App", "CreditBalance", "Account" RESTART IDENTITY CASCADE');
+    process.env.NODE_ENV = 'test';
+    await runSeed();
 
-    // Run seed logic inline by importing seed script would require ts-node; instead mimic minimal seed
-    const account = await prisma.account.create({ data: { name: 'DemoTenant' } });
-    await prisma.creditBalance.create({ data: { accountId: account.id, available: 10000, reserved: 0 } });
-    const appRow = await prisma.app.create({ data: { accountId: account.id, name: 'demo-app', status: 'ACTIVE' } });
-    const seed = require('../../prisma/seed.ts');
-    // Fallback to reading file if seed printed key there
     const tmpFile = path.join(process.cwd(), 'packages/api/tmp/demo_api_key.txt');
     demoKey = fs.existsSync(tmpFile) ? fs.readFileSync(tmpFile, 'utf8').trim() : '';
-    if (!demoKey) {
-      // Create a key if not present via rotate endpoint bypass by direct insert is complex; use service
-      const pub = 'pub' + Date.now().toString(36);
-      const sec = 'sec' + Date.now().toString(36) + 'abcd';
-      const argon2 = require('argon2');
-      const secretHash = await argon2.hash(sec);
-      await prisma.apiKey.create({ data: { appId: appRow.id, publicId: pub, prefix: 'sk_live', secretHash, lastFour: sec.slice(-4), isActive: true } });
-      demoKey = `sk_live_${pub}_${sec}`;
-    }
-
-    await prisma.entity.create({ data: { appId: appRow.id, name: 'Document' } });
-    await prisma.usageLog.create({ data: { appId: appRow.id, eventType: 'OTHER' } });
   });
 
   afterAll(async () => {
