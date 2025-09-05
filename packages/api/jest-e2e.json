@@ -1,7 +1,7 @@
 {
   "preset": "ts-jest",
   "testEnvironment": "node",
-  "testMatch": ["**/?(*.)+(e2e).[jt]s"],
+  "testMatch": ["**/?(*.)+(e2e|e2e-spec).[tj]s"],
   "moduleFileExtensions": ["ts", "js", "json"],
   "rootDir": ".",
   "globals": {
