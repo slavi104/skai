@@ -1,3 +1,7 @@
+jest.mock('crypto', () => {
+  const actual = jest.requireActual('crypto');
+  return { ...actual, randomBytes: jest.fn() };
+});
 import { AppsService } from '../../apps/apps.service';
 import { PrismaService } from '../../../prisma/prisma.service';
 import * as crypto from 'crypto';
@@ -15,8 +19,10 @@ describe('AppsService.rotateKey', () => {
   });
 
   it('creates new key, revokes old when revokeOld!==false, logs event, lastFour matches', async () => {
-    jest.spyOn(crypto, 'randomBytes').mockImplementationOnce(() => Buffer.from('a'.repeat(32), 'hex') as any);
-    jest.spyOn(crypto, 'randomBytes').mockImplementationOnce(() => Buffer.from('b'.repeat(48), 'hex') as any);
+    (crypto.randomBytes as unknown as jest.Mock).mockReset();
+    (crypto.randomBytes as unknown as jest.Mock)
+      .mockImplementationOnce(() => Buffer.from('a'.repeat(32), 'hex') as any)
+      .mockImplementationOnce(() => Buffer.from('b'.repeat(48), 'hex') as any);
 
     const apiKeyUpdate = jest.fn().mockResolvedValue({});
     const apiKeyCreate = jest.fn().mockResolvedValue({ id: 'new-key-id', createdAt: new Date() });
@@ -48,8 +54,10 @@ describe('AppsService.rotateKey', () => {
   });
 
   it('does not revoke if revokeOld===false', async () => {
-    jest.spyOn(crypto, 'randomBytes').mockImplementationOnce(() => Buffer.from('c'.repeat(32), 'hex') as any);
-    jest.spyOn(crypto, 'randomBytes').mockImplementationOnce(() => Buffer.from('d'.repeat(48), 'hex') as any);
+    (crypto.randomBytes as unknown as jest.Mock).mockReset();
+    (crypto.randomBytes as unknown as jest.Mock)
+      .mockImplementationOnce(() => Buffer.from('c'.repeat(32), 'hex') as any)
+      .mockImplementationOnce(() => Buffer.from('d'.repeat(48), 'hex') as any);
     const apiKeyUpdate = jest.fn();
     const apiKeyCreate = jest.fn().mockResolvedValue({ id: 'new-key-id', createdAt: new Date() });
     const usageLogCreate = jest.fn().mockResolvedValue({});
@@ -58,6 +66,24 @@ describe('AppsService.rotateKey', () => {
     );
 
     await service.rotateKey({ accountId: 'acc', appId: 'app', apiKeyId: 'old' }, false);
+    expect(apiKeyUpdate).not.toHaveBeenCalled();
+    expect(apiKeyCreate).toHaveBeenCalled();
+  });
+
+  it('does not revoke when revokeOld=true but no current apiKeyId', async () => {
+    (crypto.randomBytes as unknown as jest.Mock).mockReset();
+    (crypto.randomBytes as unknown as jest.Mock)
+      .mockImplementationOnce(() => Buffer.from('e'.repeat(32), 'hex') as any)
+      .mockImplementationOnce(() => Buffer.from('f'.repeat(48), 'hex') as any);
+
+    const apiKeyUpdate = jest.fn();
+    const apiKeyCreate = jest.fn().mockResolvedValue({ id: 'new-key-id', createdAt: new Date() });
+    const usageLogCreate = jest.fn().mockResolvedValue({});
+    (prisma.$transaction as any).mockImplementation(async (cb: any) =>
+      cb({ apiKey: { update: apiKeyUpdate, create: apiKeyCreate }, usageLog: { create: usageLogCreate } }),
+    );
+
+    await service.rotateKey({ accountId: 'acc', appId: 'app' }, true);
     expect(apiKeyUpdate).not.toHaveBeenCalled();
     expect(apiKeyCreate).toHaveBeenCalled();
   });

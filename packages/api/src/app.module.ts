@@ -7,8 +7,12 @@ import { UsageModule } from './modules/usage/usage.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
-      ttl: parseInt(process.env.RATE_LIMIT_TTL || '60', 10),
-      limit: parseInt(process.env.RATE_LIMIT_LIMIT || '60', 10),
+      throttlers: [
+        {
+          ttl: parseInt(process.env.RATE_LIMIT_TTL || '60', 10),
+          limit: parseInt(process.env.RATE_LIMIT_LIMIT || '60', 10),
+        },
+      ],
     }),
     PrismaModule,
     AppsModule,

@@ -3,8 +3,10 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Injectable()
 export class ApiKeyThrottlerGuard extends ThrottlerGuard {
-  protected getTracker(req: Record<string, any>): string {
-    return req?.tenant?.apiKeyId || req.ip || req.ips?.[0] || 'ip:unknown';
+  protected async getTracker(req: Record<string, any>): Promise<string> {
+    return (
+      req?.tenant?.apiKeyId || req.ip || (req.ips?.[0] as string) || 'ip:unknown'
+    );
   }
 
   protected getRequestResponse(context: ExecutionContext) {

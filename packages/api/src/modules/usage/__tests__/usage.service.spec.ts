@@ -20,17 +20,22 @@ describe('UsageService', () => {
   });
 
   it('getLogs paginates and clamps', async () => {
-    prisma.usageLog.findMany.mockResolvedValue([{ id: '1', createdAt: new Date() }, { id: '2', createdAt: new Date() }, { id: '3', createdAt: new Date() }]);
-    const { items, nextCursor } = await service.getLogs({ accountId: 'a', appId: 'b' }, 200, undefined);
+    prisma.usageLog.findMany.mockResolvedValue([
+      { id: '1', createdAt: new Date() },
+      { id: '2', createdAt: new Date() },
+      { id: '3', createdAt: new Date() },
+      { id: '4', createdAt: new Date() },
+    ]);
+    const { items, nextCursor } = await service.getLogs({ accountId: 'a', appId: 'b' }, 3, undefined);
     expect(items.length).toBeGreaterThan(0);
     expect(prisma.usageLog.findMany).toHaveBeenCalledWith({
       where: { appId: 'b' },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-      take: 201,
+      take: 4,
       cursor: undefined,
       skip: 0,
     });
-    expect(nextCursor === undefined || typeof nextCursor === 'string').toBe(true);
+    expect(typeof nextCursor).toBe('string');
   });
 });
 

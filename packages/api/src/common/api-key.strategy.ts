@@ -9,13 +9,19 @@ export interface ParsedApiKey {
 }
 
 function parseApiKey(raw: string): ParsedApiKey | null {
-  // Expected: sk_live_<publicId>_<secret>
-  const parts = raw?.trim()?.split('_');
-  if (!parts || parts.length < 3) return null;
-  const [prefix, publicId, ...rest] = parts;
-  const secret = rest.join('_');
-  if (!prefix || !publicId || !secret) return null;
-  return { prefix, publicId, secret };
+  // Expected prefixes like "sk_live" or "sk_test"
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  const prefixes = ['sk_live', 'sk_test'];
+  const found = prefixes.find((p) => trimmed.startsWith(p + '_'));
+  if (!found) return null;
+  const remainder = trimmed.slice(found.length + 1); // after prefix + '_'
+  const idx = remainder.indexOf('_');
+  if (idx <= 0) return null;
+  const publicId = remainder.slice(0, idx);
+  const secret = remainder.slice(idx + 1);
+  if (!publicId || !secret) return null;
+  return { prefix: found, publicId, secret };
 }
 
 @Injectable()
