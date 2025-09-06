@@ -2,6 +2,10 @@
   <img src="./.github/images/saas-bp-logo.png" alt="SaaS Boilerplate powered by Apptension">
 </p>
 
+<p align="center">
+  <img src="./.github/images/skai-agents-logo.png" alt="SKAI Agents Logo" width="180">
+</p>
+
 <h1 align="center">Build SaaS products faster in React, Django and AWS.</h1>
 <h2 align="center">A complete SaaS starter kit based on a battle-tested stack with out-of-the-box features every SaaS should have</h2>
 
