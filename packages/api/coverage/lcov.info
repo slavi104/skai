@@ -1,5 +1,5 @@
 TN:
-SF:src\common\api-key.strategy.ts
+SF:src/common/api-key.strategy.ts
 FN:11,parseApiKey
 FN:16,(anonymous_9)
 FN:29,(anonymous_10)
@@ -54,7 +54,7 @@ BRF:12
 BRH:11
 end_of_record
 TN:
-SF:src\modules\apps\apps.service.ts
+SF:src/modules/apps/apps.service.ts
 FN:6,toBase62
 FN:19,generatePublicId
 FN:24,generateSecret
@@ -111,7 +111,7 @@ BRF:4
 BRH:3
 end_of_record
 TN:
-SF:src\modules\usage\usage.service.ts
+SF:src/modules/usage/usage.service.ts
 FN:6,(anonymous_2)
 FN:8,(anonymous_3)
 FN:20,(anonymous_4)

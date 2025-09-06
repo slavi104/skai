@@ -43,12 +43,9 @@ export const CurrentTenantProvider = ({ children }: CurrentTenantProviderProps) 
       parsedStoredState[userId] = currentTenant.id;
       setCurrentTenantStorageState(parsedStoredState);
     }
-  }, [currentTenant?.id, userId]);
+  }, [currentTenant, userId, parsedStoredState]);
 
-  const value = useMemo(
-    () => ({ data: currentTenant || null }),
-    [currentTenant?.id, currentMembership?.role, currentTenant?.name]
-  );
+  const value = useMemo(() => ({ data: currentTenant || null }), [currentTenant]);
 
   return <currentTenantContext.Provider value={value}>{children}</currentTenantContext.Provider>;
 };

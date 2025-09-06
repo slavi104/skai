@@ -65,7 +65,7 @@ export const TenantInvitation = () => {
         },
       },
     });
-  }, [token]);
+  }, [token, tenant, tenantMembershipId, commitAcceptMutation]);
 
   const [commitDeclineMutation, { loading: declineLoading }] = useMutation(declineTenantInvitationMutation, {
     onCompleted: () => {
@@ -86,7 +86,7 @@ export const TenantInvitation = () => {
         },
       },
     });
-  }, [token]);
+  }, [token, tenant, tenantMembershipId, commitDeclineMutation]);
 
   let redirectPath: string | null = null;
 
@@ -100,7 +100,7 @@ export const TenantInvitation = () => {
     if (redirectPath) {
       navigate(redirectPath);
     }
-  }, [redirectPath]);
+  }, [redirectPath, navigate]);
 
   if (!tenant || redirectPath) {
     return null;
