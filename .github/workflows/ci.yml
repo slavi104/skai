@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  node-tests:
+    name: Node.js Monorepo Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run JS/TS tests
+        run: pnpm -r test
+        env:
+          CI: true
+
+  python-tests:
+    name: Python Package Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - packages/backend
+          - packages/workers
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PDM (Python 3.11)
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: '3.11'
+          cache: true
+
+      - name: Install dependencies
+        run: pdm install -G dev
+
+      - name: Run pytest
+        run: pdm run pytest -q
+
